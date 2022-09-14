@@ -18,7 +18,11 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
 
-file(GLOB input_SRC CONFIGURE_DEPENDS
+# Prefab packages
+find_package(ReactAndroid REQUIRED CONFIG)
+add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
+
+file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
         ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/*.cpp)
 
@@ -43,7 +47,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_newarchdefaults
         react_render_componentregistry
         react_render_core
-        react_render_debug
+        react_render_debug              # prefab ready
         react_render_graphics
         react_render_mapbuffer
         rrc_view

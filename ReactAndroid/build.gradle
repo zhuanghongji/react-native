@@ -48,8 +48,23 @@ def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 // and the build will use that.
 def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 
-// Setup build type for NDK, supported values: {debug, release}
-def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
+// By setting REACT_NATIVE_SKIP_PREFAB we can skip prefab publishing, to
+// reduce the size of the React Native published .AAR.
+def skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
+def prefabHeadersDir = project.file("$buildDir/prefab-headers")
+
+final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
+    it.input.set(
+        [
+            new PrefabPreprocessingEntry(
+                "react_render_debug",
+                project.file("../ReactCommon/react/renderer/debug/").absolutePath,
+                "react/renderer/debug/")
+        ]
+    )
+    it.outputDir.set(prefabHeadersDir)
+}
+
 
 // We put the publishing version from gradle.properties inside ext. so other
 // subprojects can access it as well.
@@ -300,7 +315,9 @@ android {
                     "reactperfloggerjni",
                     "react_newarchdefaults",
                     "turbomodulejsijni",
-                    "fabricjni"
+                    "fabricjni",
+                    // prefab targets
+                    "react_render_debug"
             }
         }
         ndk {
@@ -334,6 +351,7 @@ android {
 
     preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractNativeDependencies)
     preBuild.dependsOn("generateCodegenArtifactsFromSchema")
+    preBuild.dependsOn(preparePrefab)
 
     sourceSets.main {
         res.srcDirs = ["src/main/res/devsupport", "src/main/res/shell", "src/main/res/views/modal", "src/main/res/views/uimanager"]
@@ -366,6 +384,13 @@ android {
 
     buildFeatures {
         prefab true
+        prefabPublishing !skipPrefabPublishing
+    }
+
+    prefab {
+        react_render_debug {
+            headers(new File(prefabHeadersDir, "react_render_debug").absolutePath)
+        }
     }
 
     publishing {

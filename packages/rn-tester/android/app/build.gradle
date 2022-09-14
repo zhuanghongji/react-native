@@ -195,6 +195,9 @@ android {
         pickFirst '**/libhermes.so'
         pickFirst '**/libjsc.so'
     }
+    buildFeatures {
+        prefab true
+    }
 }
 
 dependencies {

@@ -36,6 +36,7 @@ abstract class PreparePrefabHeadersTask : DefaultTask() {
       project.copy {
         it.from(headerPath)
         it.include("**/*.h")
+        it.include("**/*.hpp")
         it.exclude("**/*.cpp")
         it.exclude("**/*.txt")
         it.into(File(outputFolder.asFile, headerPrefix))

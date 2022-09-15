@@ -34,6 +34,23 @@ add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(glog ALIAS ReactAndroid::glog)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
+add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
+
+### react_nativemodule_core
+#add_library(react_nativemodule_core SHARED IMPORTED GLOBAL)
+#set_target_properties(react_nativemodule_core
+#        PROPERTIES
+#        IMPORTED_LOCATION
+#        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_nativemodule_core.so)
+#target_include_directories(react_nativemodule_core
+#        INTERFACE
+#        ${REACT_ANDROID_SRC_DIR}/jni
+#        ${REACT_COMMON_DIR}
+#        ${REACT_COMMON_DIR}/callinvoker
+#        ${REACT_COMMON_DIR}/jsi
+#        ${REACT_COMMON_DIR}/react/nativemodule/core
+#        ${REACT_COMMON_DIR}/react/nativemodule/core/platform/android)
+#target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
@@ -46,7 +63,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
 
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DLOG_TAG=\"ReactNative\")
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DFOLLY_NO_CONFIG=1 -DLOG_TAG=\"ReactNative\")
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni                       # prefab ready
@@ -56,7 +73,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         jsi                             # prefab ready
         react_codegen_rncore            # prefab ready
         react_debug                     # prefab ready
-        react_nativemodule_core
+        react_nativemodule_core         # prefab ready
         react_newarchdefaults           # prefab ready
         react_render_componentregistry  # prefab ready
         react_render_core               # prefab ready

@@ -79,21 +79,5 @@ target_compile_options(yoga
         -O3)
 target_link_libraries(yoga INTERFACE log android)
 
-## react_nativemodule_core
-add_library(react_nativemodule_core SHARED IMPORTED GLOBAL)
-set_target_properties(react_nativemodule_core
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_nativemodule_core.so)
-target_include_directories(react_nativemodule_core
-        INTERFACE
-        ${REACT_ANDROID_SRC_DIR}/jni
-        ${REACT_COMMON_DIR}
-        ${REACT_COMMON_DIR}/callinvoker
-        ${REACT_COMMON_DIR}/jsi
-        ${REACT_COMMON_DIR}/react/nativemodule/core
-        ${REACT_COMMON_DIR}/react/nativemodule/core/platform/android)
-target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
-
 ## fbjni
 add_subdirectory(${FIRST_PARTY_NDK_DIR}/fbjni fbjni_build)

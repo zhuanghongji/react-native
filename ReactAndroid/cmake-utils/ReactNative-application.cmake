@@ -17,6 +17,18 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
+set(REACT_COMMON_DIR ${REACT_ANDROID_DIR}/../ReactCommon)
+SET(folly_FLAGS
+        -DFOLLY_NO_CONFIG=1
+        -DFOLLY_HAVE_CLOCK_GETTIME=1
+        -DFOLLY_USE_LIBCPP=1
+        -DFOLLY_MOBILE=1
+        -DFOLLY_HAVE_RECVMMSG=1
+        -DFOLLY_HAVE_PTHREAD=1
+        # If APP_PLATFORM in Application.mk targets android-23 above, please comment
+        # the following line. NDK uses GNU style stderror_r() after API 23.
+        -DFOLLY_HAVE_XSI_STRERROR_R=1
+        )
 
 # Prefab packages
 find_package(ReactAndroid REQUIRED CONFIG)
@@ -36,6 +48,27 @@ add_library(glog ALIAS ReactAndroid::glog)
 add_library(yoga ALIAS ReactAndroid::yoga)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
+add_library(folly_runtime ALIAS ReactAndroid::folly_runtime)
+
+### folly_runtime
+#add_library(folly_runtime SHARED IMPORTED GLOBAL)
+#set_target_properties(folly_runtime
+#        PROPERTIES
+#        IMPORTED_LOCATION
+#        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libfolly_runtime.so)
+#target_include_directories(folly_runtime
+#        INTERFACE
+#        ${THIRD_PARTY_NDK_DIR}/boost/boost_1_76_0
+#        ${THIRD_PARTY_NDK_DIR}/double-conversion
+#        ${THIRD_PARTY_NDK_DIR}/folly)
+#target_compile_options(folly_runtime
+#        INTERFACE
+#        -DFOLLY_NO_CONFIG=1
+#        -DFOLLY_HAVE_CLOCK_GETTIME=1
+#        -DFOLLY_HAVE_MEMRCHR=1
+#        -DFOLLY_USE_LIBCPP=1
+#        -DFOLLY_MOBILE=1
+#        -DFOLLY_HAVE_XSI_STRERROR_R=1)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
@@ -48,12 +81,13 @@ target_include_directories(${CMAKE_PROJECT_NAME}
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
 
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DFOLLY_NO_CONFIG=1 -DLOG_TAG=\"ReactNative\")
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DLOG_TAG=\"ReactNative\")
+target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC ${folly_FLAGS})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni                       # prefab ready
         fbjni
-        folly_runtime
+        folly_runtime                   # prefab ready
         glog                            # prefab ready
         jsi                             # prefab ready
         react_codegen_rncore            # prefab ready

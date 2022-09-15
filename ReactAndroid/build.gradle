@@ -83,6 +83,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             // Too big
             new PrefabPreprocessingEntry("react_nativemodule_core", new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
             new PrefabPreprocessingEntry("react_nativemodule_core", new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
+            new PrefabPreprocessingEntry("folly_runtime", new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
+            // Too big
+            new PrefabPreprocessingEntry("folly_runtime", new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
+            new PrefabPreprocessingEntry("folly_runtime", new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -350,6 +354,7 @@ android {
                     "react_render_graphics",
                     "react_nativemodule_core",
                     "rrc_view",
+                    "folly_runtime",
                     "jsi",
                     "glog",
                     "yoga"
@@ -461,6 +466,9 @@ android {
         }
         yoga {
             headers(new File(prefabHeadersDir, "yoga").absolutePath)
+        }
+        folly_runtime {
+            headers(new File(prefabHeadersDir, "folly_runtime").absolutePath)
         }
         fabricjni {
             headers(new File(prefabHeadersDir, "fabricjni").absolutePath)

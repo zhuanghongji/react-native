@@ -25,15 +25,7 @@ add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
 add_library(react_codegen_rncore ALIAS ReactAndroid::react_codegen_rncore)
 add_library(react_debug ALIAS ReactAndroid::react_debug)
-
-### react_debug
-#add_library(react_debug SHARED IMPORTED GLOBAL)
-#set_target_properties(react_debug
-#        PROPERTIES
-#        IMPORTED_LOCATION
-#        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_debug.so)
-#target_include_directories(react_debug INTERFACE ${REACT_COMMON_DIR}/react/debug)
-#target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
+add_library(react_render_componentregistry ALIAS ReactAndroid::react_render_componentregistry)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
@@ -58,7 +50,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_debug                     # prefab ready
         react_nativemodule_core
         react_newarchdefaults
-        react_render_componentregistry
+        react_render_componentregistry  # prefab ready
         react_render_core
         react_render_debug              # prefab ready
         react_render_graphics

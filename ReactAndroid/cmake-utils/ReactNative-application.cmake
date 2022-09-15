@@ -22,6 +22,7 @@ include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
 find_package(ReactAndroid REQUIRED CONFIG)
 add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
 add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
+add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
@@ -52,7 +53,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_render_graphics
         react_render_mapbuffer
         rrc_view
-        runtimeexecutor
+        runtimeexecutor                 # prefab ready
         turbomodulejsijni               # prefab ready
         yoga)
 

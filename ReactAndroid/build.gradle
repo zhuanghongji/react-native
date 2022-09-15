@@ -66,6 +66,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry("react_newarchdefaults", project.file("src/main/jni/react/newarchdefaults").absolutePath, ""),
             new PrefabPreprocessingEntry("react_render_graphics", project.file("../ReactCommon/react/renderer/graphics/").absolutePath, "react/renderer/graphics/"),
             new PrefabPreprocessingEntry("react_render_graphics", project.file("../ReactCommon/react/renderer/graphics/platform/cxx/").absolutePath, ""),
+            new PrefabPreprocessingEntry("react_render_mapbuffer", project.file("../ReactCommon/react/renderer/mapbuffer/").absolutePath, "react/renderer/mapbuffer/"),
             new PrefabPreprocessingEntry("rrc_view", project.file("../ReactCommon/react/renderer/components/view/").absolutePath, "react/renderer/components/view/"),
             new PrefabPreprocessingEntry("jsi", project.file("../ReactCommon/jsi/").absolutePath, ""),
             new PrefabPreprocessingEntry("glog", new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
@@ -332,6 +333,7 @@ android {
                     "react_codegen_rncore",
                     "react_debug",
                     "react_render_componentregistry",
+                    "react_render_mapbuffer",
                     "react_render_core",
                     "react_render_graphics",
                     "rrc_view",
@@ -445,6 +447,9 @@ android {
         }
         fabricjni {
             headers(new File(prefabHeadersDir, "fabricjni").absolutePath)
+        }
+        react_render_mapbuffer {
+            headers(new File(prefabHeadersDir, "react_render_mapbuffer").absolutePath)
         }
     }
 

@@ -194,6 +194,7 @@ android {
     packagingOptions {
         pickFirst '**/libhermes.so'
         pickFirst '**/libjsc.so'
+        pickFirst '**/libc++_shared.so'
     }
     buildFeatures {
         prefab true

@@ -284,12 +284,6 @@ tasks.register("packageReactNdkReleaseLibsForBuck", Copy) {
     into("src/main/jni/prebuilt/lib")
 }
 
-final def extractNativeDependencies = tasks.register('extractNativeDependencies', ExtractJniAndHeadersTask) {
-    it.extractHeadersConfiguration.setFrom(configurations.extractHeaders)
-    it.extractJniConfiguration.setFrom(configurations.extractJNI)
-    it.baseOutputDir = project.file("src/main/jni/first-party/")
-}
-
 task installArchives {
     dependsOn("publishAllPublicationsToNpmRepository")
 }
@@ -389,7 +383,7 @@ android {
         }
     }
 
-    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractNativeDependencies)
+    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent)
     preBuild.dependsOn("generateCodegenArtifactsFromSchema")
     preBuild.dependsOn(preparePrefab)
 
@@ -413,13 +407,8 @@ android {
         // we produce. The reason behind this is that we want to allow users to pick the
         // JS engine by specifying a dependency on either `hermes-engine` or `android-jsc`
         // that will include the necessary .so files to load.
-        exclude("**/libhermes.so")
-        exclude("**/libjsc.so")
-    }
-
-    configurations {
-        extractHeaders
-        extractJNI
+        jniLibs.excludes.add("**/libhermes.so")
+        jniLibs.excludes.add("**/libjsc.so")
     }
 
     buildFeatures {
@@ -496,7 +485,7 @@ dependencies {
     api("androidx.swiperefreshlayout:swiperefreshlayout:${SWIPEREFRESH_LAYOUT_VERSION}")
     api("androidx.tracing:tracing:${ANDROIDX_TRACING_VERSION}")
 
-    api("com.facebook.fbjni:fbjni-java-only:${FBJNI_VERSION}")
+    api("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
@@ -509,9 +498,6 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okio:okio:${OKIO_VERSION}")
     api("javax.inject:javax.inject:${JAVAX_INJECT_VERSION}")
-
-    extractHeaders("com.facebook.fbjni:fbjni:${FBJNI_VERSION}:headers")
-    extractJNI("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.

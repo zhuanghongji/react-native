@@ -16,7 +16,6 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
 set(REACT_COMMON_DIR ${REACT_ANDROID_DIR}/../ReactCommon)
 SET(folly_FLAGS
         -DFOLLY_NO_CONFIG=1
@@ -32,6 +31,8 @@ SET(folly_FLAGS
 
 # Prefab packages
 find_package(ReactAndroid REQUIRED CONFIG)
+find_package(fbjni REQUIRED CONFIG)
+
 add_library(react_codegen_rncore ALIAS ReactAndroid::react_codegen_rncore)
 add_library(react_debug ALIAS ReactAndroid::react_debug)
 add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
@@ -49,26 +50,7 @@ add_library(yoga ALIAS ReactAndroid::yoga)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
 add_library(folly_runtime ALIAS ReactAndroid::folly_runtime)
-
-### folly_runtime
-#add_library(folly_runtime SHARED IMPORTED GLOBAL)
-#set_target_properties(folly_runtime
-#        PROPERTIES
-#        IMPORTED_LOCATION
-#        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libfolly_runtime.so)
-#target_include_directories(folly_runtime
-#        INTERFACE
-#        ${THIRD_PARTY_NDK_DIR}/boost/boost_1_76_0
-#        ${THIRD_PARTY_NDK_DIR}/double-conversion
-#        ${THIRD_PARTY_NDK_DIR}/folly)
-#target_compile_options(folly_runtime
-#        INTERFACE
-#        -DFOLLY_NO_CONFIG=1
-#        -DFOLLY_HAVE_CLOCK_GETTIME=1
-#        -DFOLLY_HAVE_MEMRCHR=1
-#        -DFOLLY_USE_LIBCPP=1
-#        -DFOLLY_MOBILE=1
-#        -DFOLLY_HAVE_XSI_STRERROR_R=1)
+add_library(fbjni ALIAS fbjni::fbjni)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
@@ -86,7 +68,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC ${folly_FLAGS})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni                       # prefab ready
-        fbjni
+        fbjni                           # from third party jni
         folly_runtime                   # prefab ready
         glog                            # prefab ready
         jsi                             # prefab ready

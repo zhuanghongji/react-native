@@ -32,6 +32,7 @@ add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
 add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(glog ALIAS ReactAndroid::glog)
+add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
@@ -47,7 +48,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DLOG_TAG=\"ReactNative\")
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        fabricjni
+        fabricjni                       # prefab ready
         fbjni
         folly_runtime
         glog                            # prefab ready

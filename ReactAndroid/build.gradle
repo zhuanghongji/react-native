@@ -68,8 +68,8 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry("react_render_graphics", project.file("../ReactCommon/react/renderer/graphics/platform/cxx/").absolutePath, ""),
             new PrefabPreprocessingEntry("rrc_view", project.file("../ReactCommon/react/renderer/components/view/").absolutePath, "react/renderer/components/view/"),
             new PrefabPreprocessingEntry("jsi", project.file("../ReactCommon/jsi/").absolutePath, ""),
-            new PrefabPreprocessingEntry("glog", project.file("../ReactCommon/jsi/").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_codegen_rncore", new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
+            new PrefabPreprocessingEntry("glog", new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
+            new PrefabPreprocessingEntry("fabricjni", project.file("src/main/jni/react/fabric").absolutePath, ""),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -324,8 +324,8 @@ android {
                     "reactperfloggerjni",
                     "react_newarchdefaults",
                     "turbomodulejsijni",
-                    "fabricjni",
                     // prefab targets
+                    "fabricjni",
                     "react_render_debug",
                     "turbomodulejsijni",
                     "runtimeexecutor",
@@ -442,6 +442,9 @@ android {
         }
         glog {
             headers(new File(prefabHeadersDir, "glog").absolutePath)
+        }
+        fabricjni {
+            headers(new File(prefabHeadersDir, "fabricjni").absolutePath)
         }
     }
 

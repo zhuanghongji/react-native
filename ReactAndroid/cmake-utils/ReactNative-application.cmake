@@ -33,24 +33,9 @@ add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
 add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(glog ALIAS ReactAndroid::glog)
+add_library(yoga ALIAS ReactAndroid::yoga)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
-
-### react_nativemodule_core
-#add_library(react_nativemodule_core SHARED IMPORTED GLOBAL)
-#set_target_properties(react_nativemodule_core
-#        PROPERTIES
-#        IMPORTED_LOCATION
-#        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_nativemodule_core.so)
-#target_include_directories(react_nativemodule_core
-#        INTERFACE
-#        ${REACT_ANDROID_SRC_DIR}/jni
-#        ${REACT_COMMON_DIR}
-#        ${REACT_COMMON_DIR}/callinvoker
-#        ${REACT_COMMON_DIR}/jsi
-#        ${REACT_COMMON_DIR}/react/nativemodule/core
-#        ${REACT_COMMON_DIR}/react/nativemodule/core/platform/android)
-#target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
@@ -83,7 +68,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         rrc_view                        # prefab ready
         runtimeexecutor                 # prefab ready
         turbomodulejsijni               # prefab ready
-        yoga)
+        yoga)                           # prefab ready
 
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)

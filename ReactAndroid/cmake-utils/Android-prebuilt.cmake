@@ -31,16 +31,6 @@ set(REACT_GENERATED_SRC_DIR ${REACT_ANDROID_BUILD_DIR}/generated/source)
 # in the local project by the packageReactDebugNdkLibs/packageReactReleaseNdkLibs
 set(REACT_NDK_EXPORT_DIR ${PROJECT_BUILD_DIR}/react-ndk/exported)
 
-## fb
-add_library(fb SHARED IMPORTED GLOBAL)
-set_target_properties(fb
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libfb.so)
-target_include_directories(fb
-        INTERFACE
-        ${FIRST_PARTY_NDK_DIR}/fb/include)
-
 ## folly_runtime
 add_library(folly_runtime SHARED IMPORTED GLOBAL)
 set_target_properties(folly_runtime
@@ -60,24 +50,6 @@ target_compile_options(folly_runtime
         -DFOLLY_USE_LIBCPP=1
         -DFOLLY_MOBILE=1
         -DFOLLY_HAVE_XSI_STRERROR_R=1)
-
-## yoga
-add_library(yoga SHARED IMPORTED GLOBAL)
-set_target_properties(yoga
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libyoga.so)
-target_include_directories(yoga
-        INTERFACE
-        ${FIRST_PARTY_NDK_DIR}/yogajni/jni
-        ${REACT_COMMON_DIR}/yoga)
-target_compile_options(yoga
-        INTERFACE
-        -fvisibility=hidden
-        -fexceptions
-        -frtti
-        -O3)
-target_link_libraries(yoga INTERFACE log android)
 
 ## fbjni
 add_subdirectory(${FIRST_PARTY_NDK_DIR}/fbjni fbjni_build)

@@ -70,13 +70,17 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry("rrc_view", project.file("../ReactCommon/react/renderer/components/view/").absolutePath, "react/renderer/components/view/"),
             new PrefabPreprocessingEntry("jsi", project.file("../ReactCommon/jsi/").absolutePath, ""),
             new PrefabPreprocessingEntry("glog", new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
+            new PrefabPreprocessingEntry("yoga", project.file("../ReactCommon/yoga/").absolutePath, ""),
+            new PrefabPreprocessingEntry("yoga", project.file("src/main/jni/first-party/yogajni/jni").absolutePath, ""),
             new PrefabPreprocessingEntry("fabricjni", project.file("src/main/jni/react/fabric").absolutePath, ""),
             new PrefabPreprocessingEntry("react_nativemodule_core", project.file("../ReactCommon/react/nativemodule/core/").absolutePath, ""),
             new PrefabPreprocessingEntry("react_nativemodule_core", project.file("../ReactCommon/react/nativemodule/core/platform/android/").absolutePath, ""),
             new PrefabPreprocessingEntry("react_nativemodule_core", project.file("../ReactCommon/callinvoker/").absolutePath, ""),
+            // Too wide - Risk of API exposure
             new PrefabPreprocessingEntry("react_nativemodule_core", project.file("../ReactCommon/").absolutePath, ""),
             new PrefabPreprocessingEntry("react_nativemodule_core", project.file("src/main/jni/react/jni").absolutePath, "react/jni/"),
             new PrefabPreprocessingEntry("react_nativemodule_core", new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
+            // Too big
             new PrefabPreprocessingEntry("react_nativemodule_core", new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
             new PrefabPreprocessingEntry("react_nativemodule_core", new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
         ]
@@ -347,7 +351,8 @@ android {
                     "react_nativemodule_core",
                     "rrc_view",
                     "jsi",
-                    "glog"
+                    "glog",
+                    "yoga"
             }
         }
         ndk {
@@ -453,6 +458,9 @@ android {
         }
         glog {
             headers(new File(prefabHeadersDir, "glog").absolutePath)
+        }
+        yoga {
+            headers(new File(prefabHeadersDir, "yoga").absolutePath)
         }
         fabricjni {
             headers(new File(prefabHeadersDir, "fabricjni").absolutePath)

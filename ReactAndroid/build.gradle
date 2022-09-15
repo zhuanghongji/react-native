@@ -62,6 +62,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry("react_codegen_rncore", new File(buildDir, "generated/source/codegen/jni/").absolutePath, ""),
             new PrefabPreprocessingEntry("react_debug", project.file("../ReactCommon/react/debug/").absolutePath, "react/debug/"),
             new PrefabPreprocessingEntry("react_render_componentregistry", project.file("../ReactCommon/react/renderer/componentregistry/").absolutePath, "react/debug/"),
+            new PrefabPreprocessingEntry("react_newarchdefaults", project.file("src/main/jni/react/newarchdefaults").absolutePath, ""),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
@@ -411,6 +412,9 @@ android {
         }
         react_render_componentregistry {
             headers(new File(prefabHeadersDir, "react_render_componentregistry").absolutePath)
+        }
+        react_newarchdefaults {
+            headers(new File(prefabHeadersDir, "react_newarchdefaults").absolutePath)
         }
     }
 

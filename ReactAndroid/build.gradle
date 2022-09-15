@@ -56,15 +56,12 @@ def prefabHeadersDir = project.file("$buildDir/prefab-headers")
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
     it.input.set(
         [
-            new PrefabPreprocessingEntry(
-                "react_render_debug",
-                project.file("../ReactCommon/react/renderer/debug/").absolutePath,
-                "react/renderer/debug/")
+            new PrefabPreprocessingEntry("react_render_debug", project.file("../ReactCommon/react/renderer/debug/").absolutePath, "react/renderer/debug/"),
+            new PrefabPreprocessingEntry("turbomodulejsijni", project.file("src/main/jni/react/turbomodule").absolutePath, ""),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
 }
-
 
 // We put the publishing version from gradle.properties inside ext. so other
 // subprojects can access it as well.
@@ -317,7 +314,8 @@ android {
                     "turbomodulejsijni",
                     "fabricjni",
                     // prefab targets
-                    "react_render_debug"
+                    "react_render_debug",
+                    "turbomodulejsijni"
             }
         }
         ndk {
@@ -390,6 +388,9 @@ android {
     prefab {
         react_render_debug {
             headers(new File(prefabHeadersDir, "react_render_debug").absolutePath)
+        }
+        turbomodulejsijni {
+            headers(new File(prefabHeadersDir, "turbomodulejsijni").absolutePath)
         }
     }
 

@@ -21,6 +21,7 @@ include(${REACT_ANDROID_DIR}/cmake-utils/Android-prebuilt.cmake)
 # Prefab packages
 find_package(ReactAndroid REQUIRED CONFIG)
 add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
+add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
@@ -52,7 +53,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_render_mapbuffer
         rrc_view
         runtimeexecutor
-        turbomodulejsijni
+        turbomodulejsijni               # prefab ready
         yoga)
 
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.

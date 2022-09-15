@@ -31,6 +31,7 @@ add_library(rrc_view ALIAS ReactAndroid::rrc_view)
 add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
 add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 add_library(jsi ALIAS ReactAndroid::jsi)
+add_library(glog ALIAS ReactAndroid::glog)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS 
         *.cpp
@@ -49,7 +50,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni
         fbjni
         folly_runtime
-        glog
+        glog                            # prefab ready
         jsi                             # prefab ready
         react_codegen_rncore            # prefab ready
         react_debug                     # prefab ready

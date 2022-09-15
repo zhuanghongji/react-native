@@ -61,14 +61,6 @@ target_compile_options(folly_runtime
         -DFOLLY_MOBILE=1
         -DFOLLY_HAVE_XSI_STRERROR_R=1)
 
-## glog
-add_library(glog SHARED IMPORTED GLOBAL)
-set_target_properties(glog
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libglog.so)
-target_include_directories(glog INTERFACE ${THIRD_PARTY_NDK_DIR}/glog/exported)
-
 ## yoga
 add_library(yoga SHARED IMPORTED GLOBAL)
 set_target_properties(yoga
@@ -102,25 +94,6 @@ target_include_directories(react_nativemodule_core
         ${REACT_COMMON_DIR}/react/nativemodule/core
         ${REACT_COMMON_DIR}/react/nativemodule/core/platform/android)
 target_link_libraries(react_nativemodule_core INTERFACE folly_runtime)
-
-## react_render_imagemanager
-add_library(react_render_imagemanager SHARED IMPORTED GLOBAL)
-set_target_properties(react_render_imagemanager
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_imagemanager.so)
-target_include_directories(react_render_imagemanager
-        INTERFACE
-        ${REACT_COMMON_DIR}/react/renderer/imagemanager
-        ${REACT_COMMON_DIR}/react/renderer/imagemanager/platform/cxx)
-
-## react_render_mounting
-add_library(react_render_mounting SHARED IMPORTED GLOBAL)
-set_target_properties(react_render_mounting
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_mounting.so)
-target_include_directories(react_render_mounting INTERFACE ${REACT_COMMON_DIR}/react/renderer/mounting)
 
 ## react_render_mapbuffer
 add_library(react_render_mapbuffer SHARED IMPORTED GLOBAL)

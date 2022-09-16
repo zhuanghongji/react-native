@@ -262,28 +262,6 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-tasks.register("packageReactNdkLibsForBuck") {
-    dependsOn("packageReactNdkDebugLibsForBuck")
-}
-
-tasks.register("packageReactNdkDebugLibsForBuck", Copy) {
-    dependsOn("mergeDebugNativeLibs")
-    // Shared libraries (.so) are copied from the merged_native_libs folder instead
-    from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
-    exclude("**/libjsc.so")
-    exclude("**/libhermes.so")
-    into("src/main/jni/prebuilt/lib")
-}
-
-tasks.register("packageReactNdkReleaseLibsForBuck", Copy) {
-    dependsOn("mergeReleaseNativeLibs")
-    // Shared libraries (.so) are copied from the merged_native_libs folder instead
-    from("$buildDir/intermediates/merged_native_libs/release/out/lib/")
-    exclude("**/libjsc.so")
-    exclude("**/libhermes.so")
-    into("src/main/jni/prebuilt/lib")
-}
-
 task installArchives {
     dependsOn("publishAllPublicationsToNpmRepository")
 }

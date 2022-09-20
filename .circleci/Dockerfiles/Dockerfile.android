@@ -53,4 +53,4 @@ ADD . /app
 
 RUN yarn
 
-RUN ./gradlew :ReactAndroid:assembleDebug
+RUN ./gradlew :ReactAndroid:assembleDebug --info --stacktrace

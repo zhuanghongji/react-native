@@ -43,6 +43,7 @@ abstract class PreparePrefabHeadersTask : DefaultTask() {
           it.include("**/*.h")
           it.exclude("**/*.cpp")
           it.exclude("**/*.txt")
+          // We don't want to copy all the boost headers as they are 250Mb+
           it.include("boost/config.hpp")
           it.include("boost/config/**/*.hpp")
           it.include("boost/core/*.hpp")

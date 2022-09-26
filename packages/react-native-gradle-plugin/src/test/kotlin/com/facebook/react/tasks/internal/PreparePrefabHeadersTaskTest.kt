@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks.internal
 
+import com.facebook.react.tasks.internal.utils.PrefabPreprocessingEntry
 import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.*
@@ -17,81 +18,172 @@ import org.junit.rules.TemporaryFolder
 
 class PreparePrefabHeadersTaskTest {
 
-  @get:Rule val tempFolder = TemporaryFolder()
+  @get:Rule
+  val tempFolder = TemporaryFolder()
 
-  @Test(expected = IllegalStateException::class)
-  fun preparePrefabHeadersTask_withMissingConfiguration_fails() {
+  @Test
+  fun preparePrefabHeadersTask_withMissingConfiguration_doesNothing() {
     val task = createTestTask<PreparePrefabHeadersTask>()
 
     task.taskAction()
   }
 
   @Test
-  fun preparePrefabHeadersTask_copiesMakefile() {
-    val boostpath = tempFolder.newFolder("boostpath")
-    val output = tempFolder.newFolder("output")
-    val project = createProject()
-    val task =
-        createTestTask<PreparePrefabHeadersTask>(project = project) {
-          it.outputDir.set(output)
-        }
-    File(project.projectDir, "src/main/jni/third-party/boost/Android.mk").apply {
-      parentFile.mkdirs()
-      createNewFile()
+  fun preparePrefabHeadersTask_withSingleEntry_copiesHeaderFile() {
+    val outputDir = tempFolder.newFolder("output")
+    tempFolder.newFolder("input").apply {
+      File(this, "hello.h").createNewFile()
     }
+    val project = createProject(projectDir = tempFolder.root)
+    val task = createTestTask<PreparePrefabHeadersTask>(project = project) {
+      it.outputDir.set(outputDir)
+      it.input.set(
+        listOf(PrefabPreprocessingEntry("sample_library", "input/" to ""))
+      )
+    }
+
     task.taskAction()
 
-    assertTrue(output.listFiles()!!.any { it.name == "Android.mk" })
+    assertTrue(File(outputDir, "sample_library/hello.h").exists())
   }
 
   @Test
-  fun preparePrefabHeadersTask_copiesAsmFiles() {
-    val boostpath = tempFolder.newFolder("boostpath")
-    val output = tempFolder.newFolder("output")
-    val task =
-        createTestTask<PreparePrefabHeadersTask>() {
-          it.outputDir.set(output)
-        }
-    File(boostpath, "asm/asm.S").apply {
-      parentFile.mkdirs()
-      createNewFile()
+  fun preparePrefabHeadersTask_withSingleEntry_respectsPrefix() {
+    val expectedPrefix = "react/render/something/"
+    val outputDir = tempFolder.newFolder("output")
+    tempFolder.newFolder("input").apply {
+      File(this, "hello.h").createNewFile()
     }
+    val project = createProject(projectDir = tempFolder.root)
+    val task = createTestTask<PreparePrefabHeadersTask>(project = project) {
+      it.outputDir.set(outputDir)
+      it.input.set(
+        listOf(PrefabPreprocessingEntry("sample_library", "input/" to expectedPrefix))
+      )
+    }
+
     task.taskAction()
 
-    assertTrue(File(output, "asm/asm.S").exists())
+    assertTrue(File(outputDir, "sample_library/${expectedPrefix}hello.h").exists())
   }
 
   @Test
-  fun preparePrefabHeadersTask_copiesBoostSourceFiles() {
-    val boostpath = tempFolder.newFolder("boostpath")
-    val output = tempFolder.newFolder("output")
-    val task =
-        createTestTask<PreparePrefabHeadersTask> {
-          it.outputDir.set(output)
-        }
-    File(boostpath, "boost_1.0.0/boost/config.hpp").apply {
-      parentFile.mkdirs()
-      createNewFile()
+  fun preparePrefabHeadersTask_ignoresUnnecessaryFiles() {
+    val expectedPrefix = "react/render/something/"
+    val outputDir = tempFolder.newFolder("output")
+    tempFolder.newFolder("input").apply {
+      File(this, "hello.cpp").createNewFile()
+      File(this, "CMakeLists.txt").createNewFile()
     }
+    val project = createProject(projectDir = tempFolder.root)
+    val task = createTestTask<PreparePrefabHeadersTask>(project = project) {
+      it.outputDir.set(outputDir)
+      it.input.set(
+        listOf(PrefabPreprocessingEntry("sample_library", "input/" to expectedPrefix))
+      )
+    }
+
     task.taskAction()
 
-    assertTrue(File(output, "boost_1.0.0/boost/config.hpp").exists())
+    assertFalse(File(outputDir, "sample_library/hello.cpp").exists())
+    assertFalse(File(outputDir, "sample_library/CMakeLists.txt").exists())
   }
 
   @Test
-  fun preparePrefabHeadersTask_copiesVersionlessBoostSourceFiles() {
-    val boostpath = tempFolder.newFolder("boostpath")
-    val output = tempFolder.newFolder("output")
-    val task =
-        createTestTask<PreparePrefabHeadersTask> {
-          it.outputDir.set(output)
-        }
-    File(boostpath, "boost/boost/config.hpp").apply {
+  fun preparePrefabHeadersTask_withMultiplePaths_copiesHeaderFiles() {
+    val outputDir = tempFolder.newFolder("output")
+    File(tempFolder.root, "input/component1/hello1.h").apply {
       parentFile.mkdirs()
       createNewFile()
     }
+    File(tempFolder.root, "input/component2/debug/hello2.h").apply {
+      parentFile.mkdirs()
+      createNewFile()
+    }
+    val project = createProject(projectDir = tempFolder.root)
+    val task = createTestTask<PreparePrefabHeadersTask>(project = project) {
+      it.outputDir.set(outputDir)
+      it.input.set(
+        listOf(
+          PrefabPreprocessingEntry(
+            "sample_library",
+            listOf("input/component1/" to "", "input/component2/" to "")
+          ),
+        )
+      )
+    }
+
     task.taskAction()
 
-    assertTrue(File(output, "boost_1.0.0/boost/config.hpp").exists())
+    assertTrue(File(outputDir, "sample_library/hello1.h").exists())
+    assertTrue(File(outputDir, "sample_library/debug/hello2.h").exists())
+  }
+
+  @Test
+  fun preparePrefabHeadersTask_withMultipleEntries_copiesHeaderFiles() {
+    val outputDir = tempFolder.newFolder("output")
+    File(tempFolder.root, "input/lib1/hello1.h").apply {
+      parentFile.mkdirs()
+      createNewFile()
+    }
+    File(tempFolder.root, "input/lib2/hello2.h").apply {
+      parentFile.mkdirs()
+      createNewFile()
+    }
+    val project = createProject(projectDir = tempFolder.root)
+    val task = createTestTask<PreparePrefabHeadersTask>(project = project) {
+      it.outputDir.set(outputDir)
+      it.input.set(
+        listOf(
+          PrefabPreprocessingEntry("libraryone", "input/lib1/" to ""),
+          PrefabPreprocessingEntry("librarytwo", "input/lib2/" to "")
+        )
+      )
+    }
+
+    task.taskAction()
+
+    assertTrue(File(outputDir, "libraryone/hello1.h").exists())
+    assertTrue(File(outputDir, "librarytwo/hello2.h").exists())
+  }
+
+  @Test
+  fun preparePrefabHeadersTask_withReusedHeaders_copiesHeadersTwice() {
+    val outputDir = tempFolder.newFolder("output")
+    File(tempFolder.root, "input/lib1/hello1.h").apply {
+      parentFile.mkdirs()
+      createNewFile()
+    }
+    File(tempFolder.root, "input/lib2/hello2.h").apply {
+      parentFile.mkdirs()
+      createNewFile()
+    }
+    File(tempFolder.root, "input/shared/sharedheader.h").apply {
+      parentFile.mkdirs()
+      createNewFile()
+    }
+    val project = createProject(projectDir = tempFolder.root)
+    val task = createTestTask<PreparePrefabHeadersTask>(project = project) {
+      it.outputDir.set(outputDir)
+      it.input.set(
+        listOf(
+          PrefabPreprocessingEntry(
+            "libraryone",
+            listOf("input/lib1/" to "", "input/shared/" to "shared/")
+          ),
+          PrefabPreprocessingEntry(
+            "librarytwo",
+            listOf("input/lib2/" to "", "input/shared/" to "shared/")
+          ),
+        )
+      )
+    }
+
+    task.taskAction()
+
+    assertTrue(File(outputDir, "libraryone/hello1.h").exists())
+    assertTrue(File(outputDir, "libraryone/shared/sharedheader.h").exists())
+    assertTrue(File(outputDir, "librarytwo/hello2.h").exists())
+    assertTrue(File(outputDir, "librarytwo/shared/sharedheader.h").exists())
   }
 }

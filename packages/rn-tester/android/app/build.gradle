@@ -233,18 +233,14 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
 }
 
-// TODO: Move all this logic to CodegenPlugin.java.
-def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
-def reactAndroidBuildDir = project(':ReactAndroid').buildDir;
-
 android {
     defaultConfig {
         externalNativeBuild {
             cmake {
                 arguments "-DGENERATED_SRC_DIR=$buildDir/generated/source",
                     "-DPROJECT_BUILD_DIR=$buildDir",
-                    "-DREACT_ANDROID_DIR=$reactAndroidProjectDir",
-                    "-DREACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir",
+                    "-DREACT_ANDROID_DIR=${project(':ReactAndroid').projectDir}",
+                    "-DREACT_ANDROID_BUILD_DIR=${project(':ReactAndroid').buildDir}",
                     "-DANDROID_STL=c++_shared"
             }
         }

@@ -20,7 +20,14 @@ import java.io.File
 import javax.inject.Inject
 
 /**
- * TODO
+ * A task that takes care of copying headers and filtering them so that can be consumed by
+ * the Prefab protocol. This task handles also the header prefixes.
+ *
+ * It currently filters out some of the Boost headers as they're not used by React Native
+ * and are resulting in bigger .aar (250Mb+).
+ *
+ * You should provide in input a list fo [PrefabPreprocessingEntry] that will be used
+ * by this task to do the necessary copy operations.
  */
 abstract class PreparePrefabHeadersTask : DefaultTask() {
 

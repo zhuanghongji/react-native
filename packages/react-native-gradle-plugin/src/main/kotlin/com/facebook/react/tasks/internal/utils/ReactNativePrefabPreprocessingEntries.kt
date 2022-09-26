@@ -4,6 +4,15 @@ package com.facebook.react.tasks.internal.utils
 
 import java.io.File
 
+/**
+ * This method returns a list of [PrefabPreprocessingEntry] that allows the React Native project
+ * to be consumed via Prefab. Please note that this method is making assumptions on the ReactAndroid
+ * project layout.
+ * If any of those folder is updated, this method should be updated as well.
+ *
+ * @param buildDir A reference to the build directory (used as codegen/third party ndk sources are
+ * located there).
+ */
 fun getEntities(buildDir: File) = listOf(
   PrefabPreprocessingEntry(
     "react_render_debug",

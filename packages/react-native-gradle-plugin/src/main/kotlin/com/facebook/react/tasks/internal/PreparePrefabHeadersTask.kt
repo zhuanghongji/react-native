@@ -7,16 +7,17 @@
 
 package com.facebook.react.tasks.internal
 
+import com.facebook.react.tasks.internal.utils.PrefabPreprocessingEntry
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ListProperty
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
-import java.io.Serializable
+import javax.inject.Inject
 
 /**
  * TODO
@@ -29,24 +30,26 @@ abstract class PreparePrefabHeadersTask : DefaultTask() {
   @get:OutputDirectory
   abstract val outputDir: DirectoryProperty
 
+  @get:Inject
+  abstract val fs: FileSystemOperations
+
   @TaskAction
   fun taskAction() {
     input.get().forEach { (libraryName, headerPath, headerPrefix) ->
       val outputFolder: RegularFile = outputDir.file(libraryName).get()
-      project.copy {
+      fs.copy {
         it.from(headerPath)
         it.include("**/*.h")
-        it.include("**/*.hpp")
         it.exclude("**/*.cpp")
         it.exclude("**/*.txt")
+        it.include("boost/config.hpp")
+        it.include("boost/config/**/*.hpp")
+        it.include("boost/core/*.hpp")
+        it.include("boost/detail/workaround.hpp")
+        it.include("boost/operators.hpp")
+        it.include("boost/preprocessor/**/*.hpp")
         it.into(File(outputFolder.asFile, headerPrefix))
       }
     }
   }
 }
-
-data class PrefabPreprocessingEntry(
-  val libraryName: String,
-  val headerPath: String,
-  val headerPrefix: String
-): Serializable

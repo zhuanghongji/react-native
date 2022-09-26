@@ -19,6 +19,7 @@ plugins {
 }
 
 import com.facebook.react.tasks.internal.*
+import com.facebook.react.tasks.internal.utils.*
 
 import java.nio.file.Paths
 
@@ -54,41 +55,7 @@ def skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
 def prefabHeadersDir = project.file("$buildDir/prefab-headers")
 
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
-    it.input.set(
-        [
-            new PrefabPreprocessingEntry("react_render_debug", project.file("../ReactCommon/react/renderer/debug/").absolutePath, "react/renderer/debug/"),
-            new PrefabPreprocessingEntry("turbomodulejsijni", project.file("src/main/jni/react/turbomodule").absolutePath, ""),
-            new PrefabPreprocessingEntry("runtimeexecutor", project.file("../ReactCommon/runtimeexecutor/").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_codegen_rncore", new File(buildDir, "generated/source/codegen/jni/").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_debug", project.file("../ReactCommon/react/debug/").absolutePath, "react/debug/"),
-            new PrefabPreprocessingEntry("react_render_componentregistry", project.file("../ReactCommon/react/renderer/componentregistry/").absolutePath, "react/debug/"),
-            new PrefabPreprocessingEntry("react_render_core", project.file("../ReactCommon/react/renderer/core/").absolutePath, "react/renderer/core/"),
-            new PrefabPreprocessingEntry("react_newarchdefaults", project.file("src/main/jni/react/newarchdefaults").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_render_graphics", project.file("../ReactCommon/react/renderer/graphics/").absolutePath, "react/renderer/graphics/"),
-            new PrefabPreprocessingEntry("react_render_graphics", project.file("../ReactCommon/react/renderer/graphics/platform/cxx/").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_render_mapbuffer", project.file("../ReactCommon/react/renderer/mapbuffer/").absolutePath, "react/renderer/mapbuffer/"),
-            new PrefabPreprocessingEntry("rrc_view", project.file("../ReactCommon/react/renderer/components/view/").absolutePath, "react/renderer/components/view/"),
-            new PrefabPreprocessingEntry("jsi", project.file("../ReactCommon/jsi/").absolutePath, ""),
-            new PrefabPreprocessingEntry("glog", new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
-            new PrefabPreprocessingEntry("yoga", project.file("../ReactCommon/yoga/").absolutePath, ""),
-            new PrefabPreprocessingEntry("yoga", project.file("src/main/jni/first-party/yogajni/jni").absolutePath, ""),
-            new PrefabPreprocessingEntry("fabricjni", project.file("src/main/jni/react/fabric").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_nativemodule_core", project.file("../ReactCommon/react/nativemodule/core/").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_nativemodule_core", project.file("../ReactCommon/react/nativemodule/core/platform/android/").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_nativemodule_core", project.file("../ReactCommon/callinvoker/").absolutePath, ""),
-            // Too wide - Risk of API exposure
-            new PrefabPreprocessingEntry("react_nativemodule_core", project.file("../ReactCommon/").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_nativemodule_core", project.file("src/main/jni/react/jni").absolutePath, "react/jni/"),
-            new PrefabPreprocessingEntry("react_nativemodule_core", new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
-            // Too big
-            new PrefabPreprocessingEntry("react_nativemodule_core", new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
-            new PrefabPreprocessingEntry("react_nativemodule_core", new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
-            new PrefabPreprocessingEntry("folly_runtime", new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
-            // Too big
-            new PrefabPreprocessingEntry("folly_runtime", new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
-            new PrefabPreprocessingEntry("folly_runtime", new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
-        ]
-    )
+    it.input.set(ReactNativePrefabProcessingEntities.getEntities(project))
     it.outputDir.set(prefabHeadersDir)
 }
 

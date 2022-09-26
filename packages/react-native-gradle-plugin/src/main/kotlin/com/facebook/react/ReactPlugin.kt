@@ -52,7 +52,47 @@ class ReactPlugin : Plugin<Project> {
     }
   }
 
+  @Suppress("UnstableApiUsage")
   private fun applyAppPlugin(project: Project, config: ReactExtension) {
+    project.pluginManager.withPlugin("com.android.application") {
+      project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+        // We enable prefab so users can consume .so/headers from ReactAndroid .aar
+        ext.buildFeatures.prefab = true
+        // We set some packagingOptions { pickFirst ... } for our users
+        ext.packagingOptions.jniLibs.pickFirsts.addAll(
+          listOf(
+            // Hermes & JSC are provided by AAR dependencies we pre-bundle.
+            "**/libhermes.so",
+            "**/libjsc.so",
+            // This is the .so provided by FBJNI
+            "**/libfbjni.so",
+            // Those are prefab libraries we distribute via ReactAndroid
+            // Due to a bug in AGP, they fire a warning on console as both the JNI
+            // and the prefab .so files gets considered. See more on:
+            "**/libreact_render_debug.so",
+            "**/libturbomodulejsijni.so",
+            "**/libruntimeexecutor.so",
+            "**/libreact_codegen_rncore.so",
+            "**/libreact_debug.so",
+            "**/libreact_render_componentregistry.so",
+            "**/libreact_render_core.so",
+            "**/libreact_newarchdefaults.so",
+            "**/libreact_render_graphics.so",
+            "**/librrc_view.so",
+            "**/libjsi.so",
+            "**/libglog.so",
+            "**/libyoga.so",
+            "**/libfolly_runtime.so",
+            "**/libfabricjni.so",
+            "**/libreact_render_mapbuffer.so",
+            "**/libreact_nativemodule_core.so",
+            // AGP will give priority of libc++_shared coming from App modules.
+            "**/libc++_shared.so",
+          )
+        )
+      }
+    }
+
     project.afterEvaluate {
       if (config.applyAppPlugin.getOrElse(false)) {
         val androidConfiguration = project.extensions.getByType(BaseExtension::class.java)

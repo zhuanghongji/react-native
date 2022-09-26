@@ -55,7 +55,7 @@ def skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
 def prefabHeadersDir = project.file("$buildDir/prefab-headers")
 
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
-    it.input.set(ReactNativePrefabProcessingEntities.getEntities(project))
+    it.input.set(ReactNativePrefabProcessingEntities.getEntities(project.buildDir))
     it.outputDir.set(prefabHeadersDir)
 }
 

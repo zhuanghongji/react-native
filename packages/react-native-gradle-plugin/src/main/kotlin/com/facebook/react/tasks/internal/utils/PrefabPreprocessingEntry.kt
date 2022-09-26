@@ -4,6 +4,10 @@ import java.io.Serializable
 
 data class PrefabPreprocessingEntry(
   val libraryName: String,
-  val headerPath: String,
-  val headerPrefix: String
-): Serializable
+  val pathToPrefixCouples: List<Pair<String, String>>,
+) : Serializable {
+  constructor(libraryName: String, pathToPrefixCouple: Pair<String, String>) : this(
+    libraryName,
+    listOf(pathToPrefixCouple)
+  )
+}

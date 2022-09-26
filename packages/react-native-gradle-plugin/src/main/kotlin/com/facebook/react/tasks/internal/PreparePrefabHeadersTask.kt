@@ -35,20 +35,22 @@ abstract class PreparePrefabHeadersTask : DefaultTask() {
 
   @TaskAction
   fun taskAction() {
-    input.get().forEach { (libraryName, headerPath, headerPrefix) ->
+    input.get().forEach { (libraryName, pathToPrefixCouples) ->
       val outputFolder: RegularFile = outputDir.file(libraryName).get()
-      fs.copy {
-        it.from(headerPath)
-        it.include("**/*.h")
-        it.exclude("**/*.cpp")
-        it.exclude("**/*.txt")
-        it.include("boost/config.hpp")
-        it.include("boost/config/**/*.hpp")
-        it.include("boost/core/*.hpp")
-        it.include("boost/detail/workaround.hpp")
-        it.include("boost/operators.hpp")
-        it.include("boost/preprocessor/**/*.hpp")
-        it.into(File(outputFolder.asFile, headerPrefix))
+      pathToPrefixCouples.forEach { (headerPath, headerPrefix) ->
+        fs.copy {
+          it.from(headerPath)
+          it.include("**/*.h")
+          it.exclude("**/*.cpp")
+          it.exclude("**/*.txt")
+          it.include("boost/config.hpp")
+          it.include("boost/config/**/*.hpp")
+          it.include("boost/core/*.hpp")
+          it.include("boost/detail/workaround.hpp")
+          it.include("boost/operators.hpp")
+          it.include("boost/preprocessor/**/*.hpp")
+          it.into(File(outputFolder.asFile, headerPrefix))
+        }
       }
     }
   }

@@ -20,21 +20,19 @@ class PreparePrefabHeadersTaskTest {
   @get:Rule val tempFolder = TemporaryFolder()
 
   @Test(expected = IllegalStateException::class)
-  fun prepareBoostTask_withMissingConfiguration_fails() {
-    val task = createTestTask<PrepareBoostTask>()
+  fun preparePrefabHeadersTask_withMissingConfiguration_fails() {
+    val task = createTestTask<PreparePrefabHeadersTask>()
 
     task.taskAction()
   }
 
   @Test
-  fun prepareBoostTask_copiesMakefile() {
+  fun preparePrefabHeadersTask_copiesMakefile() {
     val boostpath = tempFolder.newFolder("boostpath")
     val output = tempFolder.newFolder("output")
     val project = createProject()
     val task =
-        createTestTask<PrepareBoostTask>(project = project) {
-          it.boostPath.setFrom(boostpath)
-          it.boostVersion.set("1.0.0")
+        createTestTask<PreparePrefabHeadersTask>(project = project) {
           it.outputDir.set(output)
         }
     File(project.projectDir, "src/main/jni/third-party/boost/Android.mk").apply {
@@ -47,13 +45,11 @@ class PreparePrefabHeadersTaskTest {
   }
 
   @Test
-  fun prepareBoostTask_copiesAsmFiles() {
+  fun preparePrefabHeadersTask_copiesAsmFiles() {
     val boostpath = tempFolder.newFolder("boostpath")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareBoostTask>() {
-          it.boostPath.setFrom(boostpath)
-          it.boostVersion.set("1.0.0")
+        createTestTask<PreparePrefabHeadersTask>() {
           it.outputDir.set(output)
         }
     File(boostpath, "asm/asm.S").apply {
@@ -66,13 +62,11 @@ class PreparePrefabHeadersTaskTest {
   }
 
   @Test
-  fun prepareBoostTask_copiesBoostSourceFiles() {
+  fun preparePrefabHeadersTask_copiesBoostSourceFiles() {
     val boostpath = tempFolder.newFolder("boostpath")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareBoostTask> {
-          it.boostPath.setFrom(boostpath)
-          it.boostVersion.set("1.0.0")
+        createTestTask<PreparePrefabHeadersTask> {
           it.outputDir.set(output)
         }
     File(boostpath, "boost_1.0.0/boost/config.hpp").apply {
@@ -85,13 +79,11 @@ class PreparePrefabHeadersTaskTest {
   }
 
   @Test
-  fun prepareBoostTask_copiesVersionlessBoostSourceFiles() {
+  fun preparePrefabHeadersTask_copiesVersionlessBoostSourceFiles() {
     val boostpath = tempFolder.newFolder("boostpath")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareBoostTask> {
-          it.boostPath.setFrom(boostpath)
-          it.boostVersion.set("1.0.0")
+        createTestTask<PreparePrefabHeadersTask> {
           it.outputDir.set(output)
         }
     File(boostpath, "boost/boost/config.hpp").apply {

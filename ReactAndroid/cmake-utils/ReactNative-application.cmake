@@ -16,6 +16,8 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${CMAKE_CURRENT_LIST_DIR}/folly-flags.cmake)
+
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
@@ -23,17 +25,6 @@ if(CCACHE_FOUND)
 endif(CCACHE_FOUND)
 
 set(REACT_COMMON_DIR ${REACT_ANDROID_DIR}/../ReactCommon)
-SET(folly_FLAGS
-        -DFOLLY_NO_CONFIG=1
-        -DFOLLY_HAVE_CLOCK_GETTIME=1
-        -DFOLLY_USE_LIBCPP=1
-        -DFOLLY_MOBILE=1
-        -DFOLLY_HAVE_RECVMMSG=1
-        -DFOLLY_HAVE_PTHREAD=1
-        # If APP_PLATFORM in Application.mk targets android-23 above, please comment
-        # the following line. NDK uses GNU style stderror_r() after API 23.
-        -DFOLLY_HAVE_XSI_STRERROR_R=1
-        )
 
 # Prefab packages
 find_package(ReactAndroid REQUIRED CONFIG)
@@ -70,7 +61,6 @@ target_include_directories(${CMAKE_PROJECT_NAME}
                 ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DLOG_TAG=\"ReactNative\")
-target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC ${folly_FLAGS})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni                       # prefab ready
@@ -92,8 +82,15 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         turbomodulejsijni               # prefab ready
         yoga)                           # prefab ready
 
+# We use an interface targe to propagate flags to all the generated targets
+# such as the folly flags or others.
+add_library(common_flags INTERFACE)
+target_compile_options(common_flags INTERFACE ${folly_FLAGS})
+target_link_libraries(ReactAndroid::react_codegen_rncore INTERFACE common_flags)
+
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         include(${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
         target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})
+        target_link_libraries(${AUTOLINKED_LIBRARIES} PRIVATE common_flags)
 endif()

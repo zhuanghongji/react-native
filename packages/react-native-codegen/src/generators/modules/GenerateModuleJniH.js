@@ -145,18 +145,6 @@ target_link_libraries(
   yoga
 )
 
-SET(folly_FLAGS
-  -DFOLLY_NO_CONFIG=1
-  -DFOLLY_HAVE_CLOCK_GETTIME=1
-  -DFOLLY_USE_LIBCPP=1
-  -DFOLLY_MOBILE=1
-  -DFOLLY_HAVE_RECVMMSG=1
-  -DFOLLY_HAVE_PTHREAD=1
-  # If APP_PLATFORM in Application.mk targets android-23 above, please comment
-  # the following line. NDK uses GNU style stderror_r() after API 23.
-  -DFOLLY_HAVE_XSI_STRERROR_R=1
-  )
-
 target_compile_options(
   react_codegen_${libraryName}
   PRIVATE
@@ -165,7 +153,6 @@ target_compile_options(
   -frtti
   -std=c++17
   -Wall
-  \${folly_FLAGS}
 )
 `;
 };

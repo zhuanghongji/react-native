@@ -10,11 +10,33 @@
 
 'use strict';
 
+import type {UnionTypeAnnotationMemberType} from '../CodegenSchema.js';
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
 
+const {
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+} = require('./errors');
+
 export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
+
+  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string {
+    switch (propertyOrIndex.type) {
+      case 'ObjectTypeProperty':
+        return propertyOrIndex.key.name;
+      case 'ObjectTypeIndexer':
+        // flow index name is optional
+        return propertyOrIndex.id?.name ?? 'key';
+      default:
+        throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+          hasteModuleName,
+          propertyOrIndex,
+          propertyOrIndex.type,
+          this.language(),
+        );
+    }
+  }
 
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
     return maybeEnumDeclaration.body.type
@@ -36,5 +58,11 @@ export class MockedParser implements Parser {
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
     return false;
+  }
+
+  remapUnionTypeAnnotationMemberNames(
+    membersTypes: $FlowFixMe[],
+  ): UnionTypeAnnotationMemberType[] {
+    return [];
   }
 }

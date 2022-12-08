@@ -10,11 +10,32 @@
 
 'use strict';
 
+import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema.js';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
 
+const {
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+} = require('../errors');
+
 class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
+
+  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string {
+    switch (propertyOrIndex.type) {
+      case 'TSPropertySignature':
+        return propertyOrIndex.key.name;
+      case 'TSIndexSignature':
+        return propertyOrIndex.parameters[0].name;
+      default:
+        throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+          hasteModuleName,
+          propertyOrIndex,
+          propertyOrIndex.type,
+          this.language(),
+        );
+    }
+  }
 
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
     if (maybeEnumDeclaration.members[0].initializer) {
@@ -45,6 +66,20 @@ class TypeScriptParser implements Parser {
       typeArguments.params[0].type !== 'TSTypeReference' ||
       typeArguments.params[0].typeName.name !== 'Spec'
     );
+  }
+
+  remapUnionTypeAnnotationMemberNames(
+    membersTypes: $FlowFixMe[],
+  ): UnionTypeAnnotationMemberType[] {
+    const remapLiteral = (item: $FlowFixMe) => {
+      return item.literal
+        ? item.literal.type
+            .replace('NumericLiteral', 'NumberTypeAnnotation')
+            .replace('StringLiteral', 'StringTypeAnnotation')
+        : 'ObjectTypeAnnotation';
+    };
+
+    return [...new Set(membersTypes.map(remapLiteral))];
   }
 }
 module.exports = {

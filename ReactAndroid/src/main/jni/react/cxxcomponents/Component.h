@@ -16,51 +16,27 @@ namespace facebook::react {
 
 class Component {
  public:
-  Component(Tag tag, Props::Shared initialProps)
-      : tag_(tag), props_(std::move(initialProps)) {}
+  Component(Tag tag) : tag_(tag) {}
 
   virtual ~Component() = default;
 
-  /*
-   * Called for updating component's props.
-   * Receiver must update native view props accordingly changed props.
-   */
-  virtual void updateProps(
-      Props::Shared const &oldProps,
-      Props::Shared const &newProps) = 0;
+  // Updates the prop with name and value received as a parameter in the
+  // component
+  virtual void updateFloatProp(const std::string &propName, float value) = 0;
 
-  /*
-   * Called for mounting (attaching) a child component view inside `self`
-   * component view.
-   * Receiver must add `childComponent` as a sub component.
-   */
+  // Mounts the child component into the children index received as parameter
   virtual void mountChildComponent(
-      std::shared_ptr<facebook::react::Component> childComponent,
-      int index){};
+      std::shared_ptr<facebook::react::Component> component,
+      int index) = 0;
 
-  /*
-   * Called for unmounting (detaching) a child component view from `self`
-   * component view.
-   * Receiver must remove `childComponent` from a sub component
-   */
-  virtual void unmountChildComponent(
-      std::shared_ptr<facebook::react::Component> childComponent,
-      int index){};
+  // Unmounts the child component from the index received as a parameter
+  virtual void unmountChildComponent(int index) = 0;
 
-  /*
-   * Called for updating component's state.
-   * Receiver must update native view according to changed state.
-   */
-  virtual void updateState(){};
-
-  /*
-   * Called when the component is being deleted.
-   */
-  virtual void deleteComponent() = 0;
+  // Draw the component
+  virtual void draw() = 0;
 
  protected:
   Tag tag_ = -1;
-  Props::Shared props_;
 };
 
 } // namespace facebook::react

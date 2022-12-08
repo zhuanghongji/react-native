@@ -27,7 +27,8 @@ const {
   UnsupportedModulePropertyParserError,
   MoreThanOneModuleInterfaceParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
-} = require('./errors.js');
+  UnsupportedArrayElementTypeAnnotationParserError,
+} = require('./errors');
 
 function throwIfModuleInterfaceIsMisnamed(
   nativeModuleName: string,
@@ -152,7 +153,7 @@ function throwIfUntypedModule(
   hasteModuleName: string,
   callExpression: $FlowFixMe,
   methodName: string,
-  $moduleName: string,
+  moduleName: string,
   language: ParserType,
 ) {
   if (typeArguments == null) {
@@ -160,7 +161,7 @@ function throwIfUntypedModule(
       hasteModuleName,
       callExpression,
       methodName,
-      $moduleName,
+      moduleName,
       language,
     );
   }
@@ -250,6 +251,33 @@ function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
   );
 }
 
+function throwIfArrayElementTypeAnnotationIsUnsupported(
+  hasteModuleName: string,
+  flowElementType: $FlowFixMe,
+  flowArrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
+  type: string,
+  language: ParserType,
+) {
+  const TypeMap = {
+    FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+    VoidTypeAnnotation: 'void',
+    PromiseTypeAnnotation: 'Promise',
+    // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
+    // Right now they are partially treated as UnionTypeAnnotation
+    UnionTypeAnnotation: 'UnionTypeAnnotation',
+  };
+
+  if (type in TypeMap) {
+    throw new UnsupportedArrayElementTypeAnnotationParserError(
+      hasteModuleName,
+      flowElementType,
+      flowArrayType,
+      TypeMap[type],
+      language,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -263,4 +291,5 @@ module.exports = {
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
 };

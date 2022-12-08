@@ -437,9 +437,6 @@ void Binding::installFabricUIManager(
       "CalculateTransformedFramesEnabled",
       getFeatureFlagValue("calculateTransformedFramesEnabled"));
 
-  disablePreallocateViews_ = reactNativeConfig_->getBool(
-      "react_fabric:disabled_view_preallocation_android");
-
   // Props setter pattern feature
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
@@ -509,10 +506,6 @@ void Binding::schedulerDidFinishTransaction(
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
     const ShadowNode &shadowNode) {
-  if (disablePreallocateViews_) {
-    return;
-  }
-
   if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
     return;
   }
@@ -535,18 +528,12 @@ void Binding::preallocateView(
   }
 
   auto shadowView = ShadowView(shadowNode);
-  auto preallocationFunction = [this,
-                                surfaceId,
-                                shadowView = std::move(shadowView)] {
-    auto mountingManager = verifyMountingManager("Binding::preallocateView");
-    if (!mountingManager) {
-      return;
-    }
+  auto mountingManager = verifyMountingManager("Binding::preallocateView");
+  if (!mountingManager) {
+    return;
+  }
 
-    mountingManager->preallocateShadowView(surfaceId, shadowView);
-  };
-
-  preallocationFunction();
+  mountingManager->preallocateShadowView(surfaceId, shadowView);
 }
 
 void Binding::schedulerDidDispatchCommand(
@@ -560,6 +547,12 @@ void Binding::schedulerDidDispatchCommand(
   }
 
   mountingManager->dispatchCommand(shadowView, commandName, args);
+}
+
+void Binding::setNativeProps_DEPRECATED(
+    const ShadowView &shadowView,
+    Props::Shared props) {
+  // TODO(T130729920): Add Android implementation for setNativeProps.
 }
 
 void Binding::schedulerDidSendAccessibilityEvent(

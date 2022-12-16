@@ -4,6 +4,7 @@ import { beforeEach, afterEach, jest } from '@jest/globals';
 
 
 jest.setTimeout(40000);
+jest.retryTimes(2);
 
 let driver;
 const config = {

@@ -40,7 +40,6 @@ const {
   MoreThanOneTypeParameterGenericParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
-  UnsupportedObjectPropertyTypeAnnotationParserError,
   UnnamedFunctionParamParserError,
 } = require('./errors');
 
@@ -116,15 +115,9 @@ function assertGenericTypeAnnotationHasExactlyOneTypeParameter(
 function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
   switch (language) {
     case 'Flow':
-      return (
-        property.type === 'ObjectTypeProperty' ||
-        property.type === 'ObjectTypeIndexer'
-      );
+      return property.type === 'ObjectTypeProperty';
     case 'TypeScript':
-      return (
-        property.type === 'TSPropertySignature' ||
-        property.type === 'TSIndexSignature'
-      );
+      return property.type === 'TSPropertySignature';
     default:
       return false;
   }
@@ -143,34 +136,12 @@ function parseObjectProperty(
 ): NamedShape<Nullable<NativeModuleBaseTypeAnnotation>> {
   const language = parser.language();
 
-  if (!isObjectProperty(property, language)) {
-    throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-      hasteModuleName,
-      property,
-      property.type,
-      language,
-    );
-  }
-
-  const {optional = false} = property;
   const name = parser.getKeyName(property, hasteModuleName);
+  const {optional = false} = property;
   const languageTypeAnnotation =
     language === 'TypeScript'
       ? property.typeAnnotation.typeAnnotation
       : property.value;
-
-  if (
-    property.type === 'ObjectTypeIndexer' ||
-    property.type === 'TSIndexSignature'
-  ) {
-    return {
-      name,
-      optional,
-      typeAnnotation: wrapNullable(nullable, {
-        type: 'GenericObjectTypeAnnotation',
-      }), //TODO: use `emitObject` for typeAnnotation
-    };
-  }
 
   const [propertyTypeAnnotation, isPropertyNullable] =
     unwrapNullable<$FlowFixMe>(
@@ -181,6 +152,7 @@ function parseObjectProperty(
         aliasMap,
         tryParse,
         cxxOnly,
+        parser,
       ),
     );
 
@@ -291,32 +263,36 @@ function translateFunctionTypeAnnotation(
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
-  language: ParserType,
+  parser: Parser,
 ): NativeModuleFunctionTypeAnnotation {
   type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
   const params: Array<Param> = [];
 
-  for (const param of getTypeAnnotationParameters(typeAnnotation, language)) {
+  for (const param of getTypeAnnotationParameters(
+    typeAnnotation,
+    parser.language(),
+  )) {
     const parsedParam = tryParse(() => {
-      if (getFunctionNameFromParameter(param, language) == null) {
+      if (getFunctionNameFromParameter(param, parser.language()) == null) {
         throw new UnnamedFunctionParamParserError(
           param,
           hasteModuleName,
-          language,
+          parser.language(),
         );
       }
 
-      const paramName = getParameterName(param, language);
+      const paramName = getParameterName(param, parser.language());
 
       const [paramTypeAnnotation, isParamTypeAnnotationNullable] =
         unwrapNullable<$FlowFixMe>(
           translateTypeAnnotation(
             hasteModuleName,
-            getParameterTypeAnnotation(param, language),
+            getParameterTypeAnnotation(param, parser.language()),
             types,
             aliasMap,
             tryParse,
             cxxOnly,
+            parser,
           ),
         );
 
@@ -351,11 +327,12 @@ function translateFunctionTypeAnnotation(
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
         hasteModuleName,
-        getTypeAnnotationReturnType(typeAnnotation, language),
+        getTypeAnnotationReturnType(typeAnnotation, parser.language()),
         types,
         aliasMap,
         tryParse,
         cxxOnly,
+        parser,
       ),
     );
 
@@ -363,7 +340,7 @@ function translateFunctionTypeAnnotation(
     hasteModuleName,
     typeAnnotation,
     'FunctionTypeAnnotation',
-    language,
+    parser.language(),
     cxxOnly,
     returnTypeAnnotation.type,
   );
@@ -390,15 +367,15 @@ function buildPropertySchema(
   aliasMap: {...NativeModuleAliasMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  language: ParserType,
   resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
 ): NativeModulePropertyShape {
   let nullable: boolean = false;
   let {key, value} = property;
   const methodName: string = key.name;
 
-  if (language === 'TypeScript') {
+  if (parser.language() === 'TypeScript') {
     value =
       property.type === 'TSMethodSignature'
         ? property
@@ -412,7 +389,7 @@ function buildPropertySchema(
     property.value,
     key.name,
     value.type,
-    language,
+    parser.language(),
   );
 
   return {
@@ -428,7 +405,7 @@ function buildPropertySchema(
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
-        language,
+        parser,
       ),
     ),
   };

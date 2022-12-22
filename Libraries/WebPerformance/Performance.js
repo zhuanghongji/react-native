@@ -10,6 +10,7 @@
 
 import type {HighResTimeStamp} from './PerformanceObserver';
 
+import warnOnce from '../Utilities/warnOnce';
 import NativePerformance from './NativePerformance';
 import {PerformanceEntry} from './PerformanceObserver';
 
@@ -20,17 +21,27 @@ export type PerformanceMarkOptions = {
   startTime?: HighResTimeStamp,
 };
 
-function getCurrentTimeStamp(): HighResTimeStamp {
-  return global.nativePerformanceNow?.() ?? Date.now();
-}
+declare var global: {
+  // This value is defined directly via JSI, if available.
+  +nativePerformanceNow?: ?() => number,
+};
+
+const getCurrentTimeStamp: () => HighResTimeStamp = global.nativePerformanceNow
+  ? global.nativePerformanceNow
+  : () => Date.now();
 
 export class PerformanceMark extends PerformanceEntry {
   detail: DetailType;
 
   constructor(markName: string, markOptions?: PerformanceMarkOptions) {
-    let startTime = markOptions?.startTime ?? getCurrentTimeStamp();
-    super({name: markName, entryType: 'mark', startTime, duration: 0});
-    if (markOptions !== undefined) {
+    super({
+      name: markName,
+      entryType: 'mark',
+      startTime: markOptions?.startTime ?? getCurrentTimeStamp(),
+      duration: 0,
+    });
+
+    if (markOptions) {
       this.detail = markOptions.detail;
     }
   }
@@ -47,6 +58,7 @@ export type PerformanceMeasureOptions = {
 
 export class PerformanceMeasure extends PerformanceEntry {
   detail: DetailType;
+
   constructor(measureName: string, measureOptions?: PerformanceMeasureOptions) {
     super({
       name: measureName,
@@ -54,10 +66,18 @@ export class PerformanceMeasure extends PerformanceEntry {
       startTime: 0,
       duration: measureOptions?.duration ?? 0,
     });
-    if (measureOptions !== undefined) {
+
+    if (measureOptions) {
       this.detail = measureOptions.detail;
     }
   }
+}
+
+function warnNoNativePerformance() {
+  warnOnce(
+    'missing-native-performance',
+    'Missing native implementation of Performance',
+  );
 }
 
 /**
@@ -71,11 +91,23 @@ export default class Performance {
     markOptions?: PerformanceMarkOptions,
   ): PerformanceMark {
     const mark = new PerformanceMark(markName, markOptions);
-    NativePerformance?.mark?.(markName, mark.startTime, mark.duration);
+
+    if (NativePerformance?.mark) {
+      NativePerformance.mark(markName, mark.startTime, mark.duration);
+    } else {
+      warnNoNativePerformance();
+    }
+
     return mark;
   }
+
   clearMarks(markName?: string): void {
-    NativePerformance?.clearMarks?.(markName);
+    if (!NativePerformance?.clearMarks) {
+      warnNoNativePerformance();
+      return;
+    }
+
+    NativePerformance.clearMarks(markName);
   }
 
   measure(
@@ -89,6 +121,7 @@ export default class Performance {
       duration,
       startTime = 0,
       endTime = 0;
+
     if (typeof startMarkOrOptions === 'string') {
       startMarkName = startMarkOrOptions;
     } else if (startMarkOrOptions !== undefined) {
@@ -127,21 +160,38 @@ export default class Performance {
 
       duration = options.duration ?? duration;
     }
+
     const measure = new PerformanceMeasure(measureName, options);
-    NativePerformance?.measure?.(
-      measureName,
-      startTime,
-      endTime,
-      duration,
-      startMarkName,
-      endMarkName,
-    );
+
+    if (NativePerformance?.measure) {
+      NativePerformance.measure(
+        measureName,
+        startTime,
+        endTime,
+        duration,
+        startMarkName,
+        endMarkName,
+      );
+    } else {
+      warnNoNativePerformance();
+    }
+
     return measure;
   }
+
   clearMeasures(measureName?: string): void {
-    NativePerformance?.clearMeasures?.(measureName);
+    if (!NativePerformance?.clearMeasures) {
+      warnNoNativePerformance();
+      return;
+    }
+
+    NativePerformance.clearMeasures(measureName);
   }
 
+  /**
+   * Returns a double, measured in milliseconds.
+   * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+   */
   now(): HighResTimeStamp {
     return getCurrentTimeStamp();
   }

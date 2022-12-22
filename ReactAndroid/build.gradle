@@ -93,6 +93,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 new Pair("src/main/jni/react/newarchdefaults", "")
             ),
             new PrefabPreprocessingEntry(
+                "react_render_animations",
+                new Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")
+            ),
+            new PrefabPreprocessingEntry(
                 "react_render_core",
                 new Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/")
             ),
@@ -117,7 +121,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "fabricjni",
-                new Pair("src/main/jni/react/fabric", "")
+                new Pair("src/main/jni/react/fabric", "react/fabric/")
             ),
             new PrefabPreprocessingEntry(
                 "react_render_mapbuffer",
@@ -147,6 +151,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair(new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                     new Pair("../ReactCommon/butter/", "butter/"),
                     new Pair("../ReactCommon/callinvoker/", ""),
+                    new Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                     new Pair("../ReactCommon/react/bridging/", "react/bridging/"),
                     new Pair("../ReactCommon/react/config/", "react/config/"),
                     new Pair("../ReactCommon/react/nativemodule/core/", ""),
@@ -205,7 +210,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "reactnativejni",
-                new Pair("src/main/jni/react/jni", "react/jni/"),
+                [
+                    new Pair("src/main/jni/react/jni", "react/jni/"),
+                    new Pair("../ReactCommon/cxxreact/", "cxxreact/"),
+                ]
             ),
         ]
     )
@@ -447,6 +455,7 @@ android {
                     "react_debug",
                     "react_render_componentregistry",
                     "react_newarchdefaults",
+                    "react_render_animations",
                     "react_render_core",
                     "react_render_graphics",
                     "rrc_image",
@@ -531,6 +540,9 @@ android {
         }
         react_newarchdefaults {
             headers(new File(prefabHeadersDir, "react_newarchdefaults").absolutePath)
+        }
+        react_render_animations {
+            headers(new File(prefabHeadersDir, "react_render_animations").absolutePath)
         }
         react_render_core {
             headers(new File(prefabHeadersDir, "react_render_core").absolutePath)

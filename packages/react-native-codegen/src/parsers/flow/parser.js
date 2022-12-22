@@ -10,9 +10,16 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema.js';
+import type {
+  UnionTypeAnnotationMemberType,
+  SchemaType,
+} from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
+
+const {buildSchema} = require('./buildSchema');
+
+const fs = require('fs');
 
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
@@ -21,21 +28,20 @@ const {
 class FlowParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
 
-  getKeyName(propertyOrIndex: $FlowFixMe, hasteModuleName: string): string {
-    switch (propertyOrIndex.type) {
-      case 'ObjectTypeProperty':
-        return propertyOrIndex.key.name;
-      case 'ObjectTypeIndexer':
-        // flow index name is optional
-        return propertyOrIndex.id?.name ?? 'key';
-      default:
-        throw new UnsupportedObjectPropertyTypeAnnotationParserError(
-          hasteModuleName,
-          propertyOrIndex,
-          propertyOrIndex.type,
-          this.language(),
-        );
+  isProperty(property: $FlowFixMe): boolean {
+    return property.type === 'ObjectTypeProperty';
+  }
+
+  getKeyName(property: $FlowFixMe, hasteModuleName: string): string {
+    if (!this.isProperty(property)) {
+      throw new UnsupportedObjectPropertyTypeAnnotationParserError(
+        hasteModuleName,
+        property,
+        property.type,
+        this.language(),
+      );
     }
+    return property.key.name;
   }
 
   getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
@@ -75,6 +81,12 @@ class FlowParser implements Parser {
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];
+  }
+
+  parseFile(filename: string): SchemaType {
+    const contents = fs.readFileSync(filename, 'utf8');
+
+    return buildSchema(contents, filename, this);
   }
 }
 

@@ -7,7 +7,7 @@ describe('Test is checking submit button', () => {
     expect(await componentsScreen.checkButtonComponentIsDisplayed()).toBeTruthy();
     await componentsScreen.clickButtonComponent();
     await buttonComponentScreen.clickSubmitApplication();
-    expect(await buttonComponentScreen.getAlertText()).toContain(submitText);
-    await buttonComponentScreen.clikOKButton();
+    expect(await buttonComponentScreen.getSubmitAlertText()).toContain(submitText);
+    await buttonComponentScreen.clickOkButton();
   });
 });

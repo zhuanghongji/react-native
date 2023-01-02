@@ -13,6 +13,9 @@ or
 
 
 2. Open second terminal -> navigate to the react-native/packages/rn-tester-e2e -> MAKE SURE YOUR APPIUM HAS UIAUTOMATOR2 AND XCUITEST INSTALLED! type 
+>npm install appium@2.0.0-beta.40 -g
+>appium driver install uiautomator2
+>appium driver install xcuitest
 >appium --base-path /wd/hub
 3. Open third terminal -> navigate to the react-native/packages/rn-tester-e2e -> run all tests by typing
 >npm run ios

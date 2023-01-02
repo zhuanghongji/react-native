@@ -4,19 +4,18 @@ const path = require('path');
 let capabilities;
 
 const android = {
-  platformName: 'Android',
-  platformVersion: '13.0',
-  deviceName: 'Pixel 6 API 33',
-  app: path.join(process.cwd(), '/apps/rn-tester.apk'),
-  automationName: 'UiAutomator2',
-  newCommandTimeout: 240,
+  'platformName': 'Android',
+  'appium:platformVersion': '13.0',
+  'appium:deviceName': 'Pixel_3a_API_33_arm64-v8a',
+  'appium:app': path.join(process.cwd(), '/apps/rn-tester.apk'),
+  'appium:automationName': 'UiAutomator2',
+  'appium:newCommandTimeout': 240,
 };
 
 const ios = {
   'platformName': 'iOS',
-  'appium:platformVersion': '16.0',
-  'appium:deviceName': 'iPhone 14 Pro Max',
-  //bundleId: 'org.reactjs.native.example.TestForE2E',
+  'appium:platformVersion': '16.1',
+  'appium:deviceName': 'iPhone 14 Pro',
   'appium:automationName': 'XCUITest',
   'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
 };

@@ -7,7 +7,7 @@ describe('Test is checking cancel button', () => {
     expect(await componentsScreen.checkButtonComponentIsDisplayed()).toBeTruthy();
     await componentsScreen.clickButtonComponent();
     await buttonComponentScreen.clickCancelApplication();
-    expect(await buttonComponentScreen.getAlertText()).toContain(cancelText);
-    await buttonComponentScreen.clikOKButton();
+    expect(await buttonComponentScreen.getCancelAlertText()).toContain(cancelText);
+    await buttonComponentScreen.clickOkButton();
   });
 });

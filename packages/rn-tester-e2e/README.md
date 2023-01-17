@@ -23,12 +23,6 @@ Build the app for not M1 mac user:
 3. Open the generated `RNTesterPods.xcworkspace`.
 4. Build the app.
 
-If you are M1 mac user:
-1. Install ffi package `gem install ffi -v '1.15.5' --source 'https://rubygems.org/'`
-2. Install pods with new architecture, e.g. using JSC `USE_HERMES=0 arch -x86_64 pod install`
-3. Open the generated `RNTesterPods.xcworkspace`.
-4. Build the app.
-
 Find the **RNTester.app** in `~/Library/Developer/Xcode/DerivedData/RNTesterPods-{id}/Build/Products/Debug-iphonesimulator` and move the app to the following directory `/react-native/packages/rn-tester-e2e/apps`
 
 

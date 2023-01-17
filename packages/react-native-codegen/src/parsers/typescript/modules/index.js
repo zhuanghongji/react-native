@@ -22,6 +22,7 @@ import type {
 
 import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
+const {flattenProperties} = require('../components/componentsUtils');
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
 const {resolveTypeAnnotation, getTypes} = require('../utils');
@@ -182,6 +183,41 @@ function translateTypeAnnotation(
         }
       }
     }
+    case 'TSInterfaceDeclaration': {
+      const objectTypeAnnotation = {
+        type: 'ObjectTypeAnnotation',
+        // $FlowFixMe[missing-type-arg]
+        properties: (flattenProperties(
+          [typeAnnotation],
+          types,
+        ): $ReadOnlyArray<$FlowFixMe>)
+          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
+            property => {
+              return tryParse(() => {
+                return parseObjectProperty(
+                  property,
+                  hasteModuleName,
+                  types,
+                  aliasMap,
+                  tryParse,
+                  cxxOnly,
+                  nullable,
+                  translateTypeAnnotation,
+                  parser,
+                );
+              });
+            },
+          )
+          .filter(Boolean),
+      };
+
+      return typeAliasResolution(
+        typeAliasResolutionStatus,
+        objectTypeAnnotation,
+        aliasMap,
+        nullable,
+      );
+    }
     case 'TSTypeLiteral': {
       // if there is TSIndexSignature, then it is a dictionary
       if (typeAnnotation.members) {
@@ -336,14 +372,12 @@ function buildModuleSchema(
       hasteModuleName,
       moduleSpec,
       callExpressions,
-      language,
     );
 
     throwIfMoreThanOneModuleRegistryCalls(
       hasteModuleName,
       callExpressions,
       callExpressions.length,
-      language,
     );
 
     const [callExpression] = callExpressions;
@@ -355,7 +389,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       callExpression.arguments.length,
-      language,
     );
 
     if (callExpression.arguments[0].type !== 'StringLiteral') {
@@ -365,7 +398,6 @@ function buildModuleSchema(
         callExpression.arguments[0],
         methodName,
         type,
-        language,
       );
     }
 
@@ -377,7 +409,6 @@ function buildModuleSchema(
       callExpression,
       methodName,
       $moduleName,
-      language,
     );
 
     throwIfIncorrectModuleRegistryCallTypeParameterParserError(

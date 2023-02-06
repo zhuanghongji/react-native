@@ -1,10 +1,18 @@
-// utility file to extract the config for E2E testing at runtime
-// for appium
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
 const path = require('path');
 let capabilities;
 
 const android = {
-  'platformName': 'Android',
+  platformName: 'Android',
   'appium:platformVersion': '13.0',
   'appium:deviceName': 'Pixel_3a_API_33_arm64-v8a',
   'appium:app': path.join(process.cwd(), '/apps/rn-tester.apk'),
@@ -13,7 +21,7 @@ const android = {
 };
 
 const ios = {
-  'platformName': 'iOS',
+  platformName: 'iOS',
   'appium:platformVersion': '16.1',
   'appium:deviceName': 'iPhone 14 Pro',
   'appium:automationName': 'XCUITest',
@@ -24,7 +32,12 @@ if (!process.env.E2E_DEVICE) {
   throw new Error('E2E_DEVICE environment variable is not defined');
 }
 
-if (!(process.env.E2E_DEVICE.includes('android') || process.env.E2E_DEVICE.includes('ios'))) {
+if (
+  !(
+    process.env.E2E_DEVICE.includes('android') ||
+    process.env.E2E_DEVICE.includes('ios')
+  )
+) {
   throw new Error('No e2e device configuration found');
 }
 

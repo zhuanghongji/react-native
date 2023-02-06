@@ -5,21 +5,36 @@
 
 # How to execute a test
 1. Open new Terminal -> navigate to the react-native path -> open Metro by typing 
->yarn start
 
-or 
 
->npm start
+```bash
+yarn start
+```
+
+or
+
+```bash
+npm start
+```
 
 
 2. Open second terminal -> navigate to the react-native/packages/rn-tester-e2e -> MAKE SURE YOUR APPIUM HAS UIAUTOMATOR2 AND XCUITEST INSTALLED! type 
->npm install appium@2.0.0-beta.40 -g
->appium driver install uiautomator2
->appium driver install xcuitest
->appium --base-path /wd/hub
+```bash
+npm install appium@2.0.0-beta.40 -g
+appium driver install uiautomator2
+appium driver install xcuitest
+appium --base-path /wd/hub
+```
+>  More details about drivers in appium [here](https://appium.github.io/appium/docs/en/2.0/guides/managing-exts/) and [here](https://appium.github.io/appium/docs/en/2.0/quickstart/uiauto2-driver/)
+
+
 3. Open third terminal -> navigate to the react-native/packages/rn-tester-e2e -> run all tests by typing
->npm run ios
 
-or 
+```bash
+npm run ios
+```
+or
 
->npm run android
+```bash
+npm run android
+```

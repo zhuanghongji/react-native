@@ -16,7 +16,7 @@ cd packages/rn-tester
 yarn clean-ios
 ```
 
-Build the app for not M1 mac user: 
+Build the app for iOS:
 
 1. Install Bundler `gem install bundler`. We use bundler to install the right version of CocoaPods locally.
 2. Install Bundler and CocoaPods dependencies: `bundle install && bundle exec pod install` or `yarn setup-ios-hermes`. In order to use JSC instead of Hermes engine, run: `USE_HERMES=0 bundle exec pod install` or `` instead.
@@ -40,7 +40,7 @@ yarn start
 
 _Note: Building for the first time can take a while._
 
-Find the **RNTester.app** in `~/react-native/packages/rn-tester/android/app/build/outputs/apk/jsc/debug` and move the app to the following directory `/react-native/packages/rn-tester-e2e/apps`
+Find the **RNTester.app** in `~/react-native/packages/rn-tester/android/app/build/outputs/apk/jsc/debug`, then change: `RNTester.app` folder name to: `rn-tester.app` and move the app to the following directory `/react-native/packages/rn-tester-e2e/apps`
 
 
 ## Usage

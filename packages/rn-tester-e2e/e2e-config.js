@@ -14,7 +14,7 @@ let capabilities;
 const android = {
   platformName: 'Android',
   'appium:platformVersion': '13.0',
-  'appium:deviceName': 'Pixel_3a_API_33_arm64-v8a',
+  'appium:deviceName': 'Android Emulator',
   'appium:app': path.join(process.cwd(), '/apps/rn-tester.apk'),
   'appium:automationName': 'UiAutomator2',
   'appium:newCommandTimeout': 240,
@@ -22,8 +22,8 @@ const android = {
 
 const ios = {
   platformName: 'iOS',
-  'appium:platformVersion': '16.1',
-  'appium:deviceName': 'iPhone 14 Pro',
+  'appium:platformVersion': '16.2',
+  'appium:deviceName': 'iPhone 14',
   'appium:automationName': 'XCUITest',
   'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
 };

@@ -55,6 +55,7 @@
 @property (nonatomic, strong) UIWindow *window;
 @property (nonatomic, strong) RCTBridge *bridge;
 @property (nonatomic, strong) NSString *moduleName;
+@property (nonatomic, strong) NSDictionary *initialProps;
 
 /**
  * It creates a `RCTBridge` using a delegate and some launch options.
@@ -98,13 +99,6 @@
 /// The TurboModule manager
 @property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 @property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
-
-/// This method controls whether the `concurrentRoot` feature of React18 is turned on or off.
-///
-/// @see: https://reactjs.org/blog/2022/03/29/react-v18.html
-/// @note: This requires to be rendering on Fabric (i.e. on the New Architecture).
-/// @return: `true` if the `concurrentRoot` feature is enabled. Otherwise, it returns `false`.
-- (BOOL)concurrentRootEnabled;
 
 /// This method controls whether the `turboModules` feature of the New Architecture is turned on or off.
 ///
